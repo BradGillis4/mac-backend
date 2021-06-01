@@ -1,51 +1,31 @@
 class CartsProductsController < ApplicationController
-  before_action :set_carts_product, only: [:show, :update, :destroy]
 
-  # GET /carts_products
-  def index
-    @carts_products = CartsProduct.all
-
-    render json: @carts_products
+  def new
+      carts_products = CartsProducts.new(carts_products_params)
   end
 
-  # GET /carts_products/1
-  def show
-    render json: @carts_product
+  def create 
+      cp = CartsProducts.create(cart_id: params[:cart_id], product_id: params[:product_id])
+      cart = Cart.find(params[:cart_id])
+      cart.update(item_count: cart.products.count)
+      total_price = cart.products.reduce(0) {|sum, product | sum + product.price }
+      cart.update(total_price: total_price.round(2))
+      render json: cart 
+
+
   end
 
-  # POST /carts_products
-  def create
-    @carts_product = CartsProduct.new(carts_product_params)
-
-    if @carts_product.save
-      render json: @carts_product, status: :created, location: @carts_product
-    else
-      render json: @carts_product.errors, status: :unprocessable_entity
-    end
-  end
-
-  # PATCH/PUT /carts_products/1
-  def update
-    if @carts_product.update(carts_product_params)
-      render json: @carts_product
-    else
-      render json: @carts_product.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /carts_products/1
   def destroy
-    @carts_product.destroy
+      if params[:subtract_product_id]
+          CartsProducts.where(cart_id: params[:cart_id], product_id: params[:subtract_product_id]).last.destroy
+          cart = Cart.find(params[:cart_id])
+          render json: cart
+      end
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_carts_product
-      @carts_product = CartsProduct.find(params[:id])
-    end
+  private 
 
-    # Only allow a list of trusted parameters through.
-    def carts_product_params
-      params.require(:carts_product).permit(:cart_id, :product_id)
-    end
+  def carts_products_params
+      params.require(:carts_products).permit(:cart_id, :product_id)
+  end
 end

@@ -1,24 +1,24 @@
 class ProductsController < ApplicationController
 
   
-  def index 
-      products = Product.all 
-      render json: products
+    def index 
+        products = Product.all 
+        render json: products
 
-  end
+    end
 
-  def show 
-      product = Product.find_by(id: params[:id])
-      render json: product
-  end
+    def show 
+        product = Product.find_by(id: params[:id])
+        render json: product
+    end
 
 
 
-  private 
+    private 
 
-  def products_params 
-      params.require(:products).permit(:title, :description, :price, :cart_id, :category, :id)
-  end
+    def products_params 
+        params.require(:products).permit(:title, :description, :price, :cart_id, :category, :id)
+    end
 
 
 end
