@@ -3,6 +3,7 @@ class CartsProductsController < ApplicationController
   def new
       carts_products = CartsProducts.new(carts_products_params)
   end
+  
 
   def create 
       cp = CartsProducts.create(cart_id: params[:cart_id], product_id: params[:product_id])

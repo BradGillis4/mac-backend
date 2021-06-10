@@ -7,7 +7,7 @@ end
 
 def show 
     cart = Cart.find_by(id: params[:id])
-    render json: cart
+    render json: cart, include: [:products]
 end
 
 def create 
